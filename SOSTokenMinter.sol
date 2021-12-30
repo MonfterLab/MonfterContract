@@ -15,7 +15,7 @@ contract SOSTokenMinter is ReentrancyGuard {
     IERC20 public sosToken;
     MonfterNFT public monfterNft;
 
-    uint256 public mintPrice = 40000000e18;
+    uint256 public mintPrice = 35000000e18;
     uint256 public MAX_MINT = 721;
 
     uint256 public sosMint;
@@ -29,16 +29,16 @@ contract SOSTokenMinter is ReentrancyGuard {
     }
 
     function mint(uint256 amount) public payable nonReentrant {
-        require(sosMint.add(1) <= MAX_MINT, "mint end");
+        require(sosMint.add(amount) <= MAX_MINT, "insufficient amount");
         require(amount >= 1 && amount <= 10, "invalid amount");
 
         sosToken.transfer(dead, mintPrice.mul(amount));
+        sosMint = sosMint.add(amount);
 
         for (uint256 i = 0; i < amount; i++) {
             monfterNft.safeMint(msg.sender);
         }
 
-        sosMint = sosMint.add(1);
         emit Mint(msg.sender);
     }
 }
